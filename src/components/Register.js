@@ -11,6 +11,7 @@ import "./Register.css";
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading,setIsLoading]= useState(false);
+  const [formData,setFormData] = useState({username:"",password:"",conformPassword:""});
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
   /**
    * Definition for register handler
@@ -35,9 +36,10 @@ const Register = () => {
    * }
    */
   const register = async (e) => {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const conformPassword = document.getElementById("confirmPassword").value;
+    // const username = document.getElementById("username").value;
+    // const password = document.getElementById("password").value;
+    // const conformPassword = document.getElementById("confirmPassword").value;
+    const {username,password,conformPassword}=formData;
     if (validateInput({ username, password, conformPassword })) {
       setIsLoading(true);
       const res = await axios
@@ -74,6 +76,7 @@ const Register = () => {
             });
           }
         });
+        setFormData({username:"",password:"",conformPassword:""})
     }
   };
 
@@ -147,6 +150,8 @@ const Register = () => {
             title="Username"
             name="username"
             placeholder="Enter Username"
+            value={formData["username"]}
+            onChange={(e)=>{setFormData({...formData,['username']:e.target.value})}}
             fullWidth
           />
           <TextField
@@ -158,6 +163,8 @@ const Register = () => {
             helperText="Password must be atleast 6 characters length"
             fullWidth
             placeholder="Enter a password with minimum 6 characters"
+            value={formData["password"]}
+            onChange={(e)=>{setFormData({...formData,['password']:e.target.value})}}
           />
           <TextField
             id="confirmPassword"
@@ -165,6 +172,8 @@ const Register = () => {
             label="Confirm Password"
             name="confirmPassword"
             type="password"
+            value={formData["conformPassword"]}
+            onChange={(e)=>{setFormData({...formData,['conformPassword']:e.target.value})}}
             fullWidth
           />
          { !isLoading ? <Button className="button" variant="contained" onClick={register}>
