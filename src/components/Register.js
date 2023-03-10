@@ -1,7 +1,7 @@
 import { Button, CircularProgress, Stack, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import axios from "axios";
-import { useSnackbar } from "notistack";
+import { SnackbarProvider, useSnackbar } from "notistack";
 import React, { useState } from "react";
 import { config } from "../App";
 import Footer from "./Footer";
@@ -10,8 +10,7 @@ import "./Register.css";
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
-
-
+  const [isLoading,setIsLoading]= useState(false);
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
   /**
    * Definition for register handler
@@ -35,7 +34,47 @@ const Register = () => {
    *      "message": "Username is already taken"
    * }
    */
-  const register = async (formData) => {
+  const register = async (e) => {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const conformPassword = document.getElementById("confirmPassword").value;
+    if (validateInput({ username, password, conformPassword })) {
+      setIsLoading(true);
+      const res = await axios
+        .post(`${config.endpoint}/auth/register`, {
+          username,
+          password,
+        })
+        .then((resp) => {
+          // console.log(resp.data.message);
+          setIsLoading(false);
+          const message = "Registered successfully";
+          enqueueSnackbar(message, {
+            variant: "success",
+          });
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          console.log(err.response, 55)
+          let status = err.response.status;
+          if (
+            status >= 400 &&
+            status < 500
+          ) {
+            console.log(err);
+            const message = err.response.data.message;
+            enqueueSnackbar(message, {
+              variant: "error",
+            });
+          } else {
+            const message =
+              "Something went wrong. Check that the backend is running, reachable and returns valid JSON.";
+            enqueueSnackbar(message, {
+              variant: "error",
+            });
+          }
+        });
+    }
   };
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement user input validation logic
@@ -57,6 +96,36 @@ const Register = () => {
    * -    Check that confirmPassword field has the same value as password field - Passwords do not match
    */
   const validateInput = (data) => {
+    const { username, password, conformPassword } = data;
+    // console.log(data);
+    if (username == "") {
+      enqueueSnackbar("Username is required", {
+        variant: "warning",
+      });
+      return false;
+    } else if (password == "") {
+      enqueueSnackbar("Password is required", {
+        variant: "warning",
+      });
+      return false;
+    } else if (username.length < 6) {
+      enqueueSnackbar("Username should be > 6", {
+        variant: "warning",
+      });
+      return false;
+    } else if (password.length < 6) {
+      enqueueSnackbar("Password should be > 6", {
+        variant: "warning",
+      });
+      return false;
+    } else if (password !== conformPassword) {
+      enqueueSnackbar("Password and Conform Password do not match", {
+        variant: "warning",
+      });
+      return false;
+    }
+    // console.log('not ok')
+    else return true;
   };
 
   return (
@@ -66,6 +135,7 @@ const Register = () => {
       justifyContent="space-between"
       minHeight="100vh"
     >
+      <SnackbarProvider />
       <Header hasHiddenAuthButtons />
       <Box className="content">
         <Stack spacing={2} className="form">
@@ -97,14 +167,14 @@ const Register = () => {
             type="password"
             fullWidth
           />
-           <Button className="button" variant="contained">
+         { !isLoading ? <Button className="button" variant="contained" onClick={register}>
             Register Now
-           </Button>
+          </Button>:<div className="loader"><CircularProgress  /></div>}
           <p className="secondary-action">
             Already have an account?{" "}
-             <a className="link" href="#">
+            <a className="link" href="#">
               Login here
-             </a>
+            </a>
           </p>
         </Stack>
       </Box>

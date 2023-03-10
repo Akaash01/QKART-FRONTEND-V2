@@ -245,6 +245,7 @@ describe("Register Page", () => {
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent(/Username is already taken/i);
+    
   });
 
 });

@@ -11,9 +11,11 @@ router.post("/register", (req, res) => {
 
   users.findOne({ username: req.body.username }, (err, user) => {
     if (err) {
+      console.log(err)
       return handleError(res, err);
     }
     if (user) {
+      console.log(user);
       return res.status(400).json({
         success: false,
         message: "Username already exists",
