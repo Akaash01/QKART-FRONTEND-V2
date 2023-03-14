@@ -6,10 +6,12 @@ import React, { useState } from "react";
 import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
+import { Link ,useHistory} from "react-router-dom";
 import "./Register.css";
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const history = useHistory();
   const [isLoading,setIsLoading]= useState(false);
   const [formData,setFormData] = useState({username:"",password:"",conformPassword:""});
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
@@ -54,6 +56,7 @@ const Register = () => {
           enqueueSnackbar(message, {
             variant: "success",
           });
+          history.push('/login',{from:'register'});
         })
         .catch((err) => {
           setIsLoading(false);
@@ -139,7 +142,7 @@ const Register = () => {
       minHeight="100vh"
     >
       <SnackbarProvider />
-      <Header hasHiddenAuthButtons />
+      <Header  />
       <Box className="content">
         <Stack spacing={2} className="form">
           <h2 className="title">Register</h2>
@@ -181,9 +184,9 @@ const Register = () => {
           </Button>:<div className="loader"><CircularProgress  /></div>}
           <p className="secondary-action">
             Already have an account?{" "}
-            <a className="link" href="#">
+            <Link to='/login' className="link" >
               Login here
-            </a>
+            </Link>
           </p>
         </Stack>
       </Box>
