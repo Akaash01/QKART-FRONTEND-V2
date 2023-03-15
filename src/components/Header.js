@@ -1,5 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Avatar, Button, Stack } from "@mui/material";
+import { Search, SentimentDissatisfied } from "@mui/icons-material";
+import { Avatar, Button, Stack,TextField,InputAdornment } from "@mui/material";
 import {useState,useEffect} from "react";
 import {Link,useHistory} from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -22,6 +23,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
         <Box className="header-title">
             <img src="logo_light.svg" alt="QKart-icon"></img>
         </Box>
+        { children }
         { !hasHiddenAuthButtons ? (<Button
           className="explore-button"
           startIcon={<ArrowBackIcon />}
