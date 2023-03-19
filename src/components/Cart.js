@@ -4,7 +4,7 @@ import {
   ShoppingCart,
   ShoppingCartOutlined,
 } from "@mui/icons-material";
-import { Button, IconButton, Stack } from "@mui/material";
+import { Button, IconButton, Stack,Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -75,6 +75,21 @@ export const getTotalCartValue = (items = []) => {
 };
 
 
+// TODO: CRIO_TASK_MODULE_CHECKOUT - Implement function to return total cart quantity
+/**
+ * Return the sum of quantities of all products added to the cart
+ *
+ * @param { Array.<CartItem> } items
+ *    Array of objects with complete data on products in cart
+ *
+ * @returns { Number }
+ *    Total quantity of products added to the cart
+ *
+ */
+export const getTotalItems = (items = []) => {
+};
+
+// TODO: CRIO_TASK_MODULE_CHECKOUT - Add static quantity view for Checkout page cart
 /**
  * Component to display the current quantity for a product and + and - buttons to update product quantity on cart
  * 
@@ -87,24 +102,27 @@ export const getTotalCartValue = (items = []) => {
  * @param {Function} handleDelete
  *    Handler function which reduces the quantity of a product in cart by 1
  * 
+ * @param {Boolean} isReadOnly
+ *    If product quantity on cart is to be displayed as read only without the + - options to change quantity
  * 
  */
 const ItemQuantity = ({
   value,
   handleAdd,
   handleDelete,
+  isReadOnly
 }) => {
   return (
     <Stack direction="row" alignItems="center">
-      <IconButton size="small" color="primary" onClick={handleDelete}>
+      {!isReadOnly && <IconButton size="small" color="primary" onClick={handleDelete}>
         <RemoveOutlined />
-      </IconButton>
+      </IconButton>}
       <Box padding="0.5rem" data-testid="item-qty">
-        {value}
+       {isReadOnly && "Qty:"}{value}
       </Box>
-      <IconButton size="small" color="primary" onClick={handleAdd}>
+     {!isReadOnly && <IconButton size="small" color="primary" onClick={handleAdd}>
         <AddOutlined />
-      </IconButton>
+      </IconButton>}
     </Stack>
   );
 };
@@ -121,13 +139,17 @@ const ItemQuantity = ({
  * @param {Function} handleDelete
  *    Current quantity of product in cart
  * 
+ * @param {Boolean} isReadOnly
+ *    If product quantity on cart is to be displayed as read only without the + - options to change quantity
  * 
  */
 const Cart = ({
   products,
   items = [],
   handleQuantity,
+  isReadOnly
 }) => {
+  console.log({isReadOnly})
   const history = useHistory();
    console.log({products,items,handleQuantity});
    const handleAdd = (pId) =>{
@@ -172,7 +194,8 @@ const Cart = ({
         height="6rem"
         paddingX="1rem"
     >
-        <div>{item.name}</div>
+      <Typography variant="body3">{item.name}</Typography>
+
         <Box
             display="flex"
             justifyContent="space-between"
@@ -183,6 +206,7 @@ const Cart = ({
         value={item.qty}
         handleAdd={()=>handleAdd(item._id)}
         handleDelete={()=>handleDelete(item._id)}
+        isReadOnly={isReadOnly}
         />
         <Box padding="0.5rem" fontWeight="700">
             ${item.cost}
@@ -214,7 +238,7 @@ const Cart = ({
           </Box>
         </Box>
 
-        <Box display="flex" justifyContent="flex-end" className="cart-footer">
+       { !isReadOnly && <Box display="flex" justifyContent="flex-end" className="cart-footer">
           <Button
             color="primary"
             variant="contained"
@@ -224,8 +248,45 @@ const Cart = ({
           >
             Checkout
           </Button>
+        </Box>}
         </Box>
-      </Box>
+        { isReadOnly && <Box sx={{background:'white',padding:"0rem .5rem", borderRadius:"5px"}} margin=".5rem" >
+          <Typography color="#3C3C3C" variant="h6" my=".5rem" py=".25rem">
+              Order Details
+            </Typography>
+            <Box sx={{display:'flex', justifyContent: 'space-between' }}>
+            <Typography color="#3C3C3C" variant="body2" my="0.5rem">
+              Products
+            </Typography>
+            <Typography color="#3C3C3C" variant="body3" my="0.5rem">
+              {products.length}
+            </Typography>
+            </Box>
+            <Box sx={{display:'flex', justifyContent: 'space-between' }}>
+            <Typography color="#3C3C3C" variant="body2" my="0.5rem">
+              Subtotal
+            </Typography>
+            <Typography color="#3C3C3C" variant="body3" my="0.5rem">
+            ${getTotalCartValue(items)}     
+            </Typography>
+            </Box>
+            <Box sx={{display:'flex', justifyContent: 'space-between' }}>
+            <Typography color="#3C3C3C" variant="body2" my="0.5rem">
+              Shipping Charges
+            </Typography>
+            <Typography color="#3C3C3C" variant="body3" my="0.5rem">
+              $0
+            </Typography>
+            </Box>
+            <Box sx={{display:'flex', justifyContent: 'space-between'}}>
+            <Typography color="#3C3C3C" variant="body1" my="0.5rem">
+            <Box sx={{ fontWeight: 'bold', m: 1 }}>Total</Box>
+            </Typography>
+            <Typography color="#3C3C3C" variant="body1" my="0.5rem">
+            <Box sx={{ fontWeight: 'bold', m: 1 }}>${getTotalCartValue(items)} </Box>
+            </Typography>
+            </Box>
+          </Box>}
     </>
   );
 };
